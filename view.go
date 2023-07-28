@@ -1,5 +1,14 @@
 package main
 
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"log"
+	"net/http"
+	"strconv"
+	"time"
+)
+
 var hosturl string = "localhost:8080"
 
 func main() {
@@ -29,7 +38,7 @@ func postProcessReceipts(c *gin.Context) {
 	// } else {
 	// 	r.total = temp
 	// }
-	r.total, _ = strconv.ParseFloat(in.Total, 64)
+	r.total, _ = strconv.ParseFloat(in.Total, 64) //TODO leave exposed?
 
 	items := make([]item, len(in.Items))
 	for i, itemIn := range in.Items {
@@ -40,7 +49,7 @@ func postProcessReceipts(c *gin.Context) {
 		// } else {
 		// 	item.price = temp
 		// }
-		item.price, _ = strconv.ParseFloat(itemIn.Price, 64)
+		item.price, _ = strconv.ParseFloat(itemIn.Price, 64) //TODO leave exposed?
 		items[i] = item
 	}
 

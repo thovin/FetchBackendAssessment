@@ -1,5 +1,13 @@
 package main
 
+import (
+	"github.com/google/uuid"
+	"math"
+	"strings"
+	"time"
+	"unicode"
+)
+
 type item struct {
 	shortDescription string
 	price            float64
