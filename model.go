@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/google/uuid"
 	"math"
+	"strconv"
 	"strings"
 	"time"
 	"unicode"
@@ -20,19 +21,6 @@ type receipt struct {
 	total        float64
 	items        []item
 	points       int
-}
-
-type inData struct {
-	Retailer     string `json:"retailer"`
-	PurchaseDate string
-	PurchaseTime string
-	Total        string
-	Items        []inItem
-}
-
-type inItem struct {
-	ShortDescription string
-	Price            string
 }
 
 var receipts map[uuid.UUID]receipt = make(map[uuid.UUID]receipt)
@@ -71,5 +59,43 @@ func calculatePoints(r receipt) int {
 	}
 
 	return points
+
+}
+
+func addReceipt(in inData) uuid.UUID {
+	var r receipt
+
+	r.retailer = in.Retailer
+
+	dateLayout := "2006-01-02 15:04"
+	r.purchaseTime, _ = time.Parse(dateLayout, in.PurchaseDate+" "+in.PurchaseTime)
+
+	// if temp, err := strconv.ParseFloat(in.Total, 64); err != nil {
+	// 	log.Println(err)
+	// } else {
+	// 	r.total = temp
+	// }
+	r.total, _ = strconv.ParseFloat(in.Total, 64) //TODO leave exposed?
+
+	items := make([]item, len(in.Items))
+	for i, itemIn := range in.Items {
+		var item item
+		item.shortDescription = itemIn.ShortDescription
+		// if temp, err := strconv.ParseFloat(itemIn.Price, 64); err != nil {
+		// 	log.Println(err)
+		// } else {
+		// 	item.price = temp
+		// }
+		item.price, _ = strconv.ParseFloat(itemIn.Price, 64) //TODO leave exposed?
+		items[i] = item
+	}
+
+	r.items = items
+
+	r.id = uuid.New() //TODO how do I validate unique? Do I actually have to, or is only one receipt at a time handled?
+	r.points = calculatePoints(r)
+
+	receipts[r.id] = r
+	return r.id
 
 }
