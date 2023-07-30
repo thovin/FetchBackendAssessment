@@ -28,7 +28,7 @@ var receipts map[uuid.UUID]receipt = make(map[uuid.UUID]receipt)
 func calculatePoints(r receipt) int {
 	var points int
 
-	for _, c := range strings.TrimSpace(r.retailer) { //one point per alphnumeric
+	for _, c := range strings.TrimSpace(r.retailer) { //one point per alphanumeric
 		if unicode.IsLetter(c) || unicode.IsNumber(c) {
 			points++
 		}
@@ -66,33 +66,20 @@ func addReceipt(in inData) uuid.UUID {
 	var r receipt
 
 	r.retailer = in.Retailer
-
 	dateLayout := "2006-01-02 15:04"
 	r.purchaseTime, _ = time.Parse(dateLayout, in.PurchaseDate+" "+in.PurchaseTime)
-
-	// if temp, err := strconv.ParseFloat(in.Total, 64); err != nil {
-	// 	log.Println(err)
-	// } else {
-	// 	r.total = temp
-	// }
-	r.total, _ = strconv.ParseFloat(in.Total, 64) //TODO leave exposed?
+	r.total, _ = strconv.ParseFloat(in.Total, 64)
 
 	items := make([]item, len(in.Items))
 	for i, itemIn := range in.Items {
 		var item item
 		item.shortDescription = itemIn.ShortDescription
-		// if temp, err := strconv.ParseFloat(itemIn.Price, 64); err != nil {
-		// 	log.Println(err)
-		// } else {
-		// 	item.price = temp
-		// }
-		item.price, _ = strconv.ParseFloat(itemIn.Price, 64) //TODO leave exposed?
+		item.price, _ = strconv.ParseFloat(itemIn.Price, 64)
 		items[i] = item
 	}
 
 	r.items = items
-
-	r.id = uuid.New() //for the purposes of this project generated UUID's are assumed to be unique and not validated
+	r.id = uuid.New()
 	r.points = calculatePoints(r)
 
 	receipts[r.id] = r
