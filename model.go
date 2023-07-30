@@ -92,7 +92,7 @@ func addReceipt(in inData) uuid.UUID {
 
 	r.items = items
 
-	r.id = uuid.New() //TODO how do I validate unique? Do I actually have to, or is only one receipt at a time handled?
+	r.id = uuid.New() //for the purposes of this project generated UUID's are assumed to be unique and not validated
 	r.points = calculatePoints(r)
 
 	receipts[r.id] = r
